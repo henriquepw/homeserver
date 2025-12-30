@@ -1,0 +1,14 @@
+services:
+  kavita:
+    image: jvmilazz0/kavita
+    container_name: kavita
+    volumes:
+      - /Volumes/Data/media/mangas:/mangas
+      - /Volumes/Data/media/comics:/comics
+      - /Volumes/Data/media/books:/books
+      - ./config:/kavita/config
+    environment:
+      - TZ=America/Fortaleza
+    ports:
+      - "5555:5000"
+    restart: unless-stopped
