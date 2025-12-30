@@ -1,0 +1,44 @@
+services:
+  # jellyfin:
+  #   image: jellyfin/jellyfin:latest
+  #   container_name: jellyfin
+  #   ports:
+  #     - 8096:8096/tcp
+  #     - 7359:7359/udp
+  #   volumes:
+  #     - ./config:/config
+  #     - ./cache:/cache
+  #     - type: bind
+  #       source: /Volumes/Data/midia/videos
+  #       target: /media/videos
+  #     - type: bind
+  #       source: /Volumes/Data/midia/fonts
+  #       target: /usr/local/share/fonts/custom
+  #       read_only: true
+  #   restart: "unless-stopped"
+  #   environment:
+  #     - JELLYFIN_PublishedServerUrl=http://tv.henrique.pw
+  #   extra_hosts:
+  #     - "host.docker.internal:host-gateway"
+  #
+  jellyfin_vue:
+    container_name: jellyfin_vue
+    image: ghcr.io/jellyfin/jellyfin-vue:unstable
+    restart: always
+    ports:
+      - 8097:80
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+
+  watchtower:
+    container_name: watchtower
+    image: ghcr.io/nicholas-fedor/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      TZ: America/Fortaleza
+      WATCHTOWER_CLEANUP: 1
+      WATCHTOWER_INCLUDE_RESTARTING: 1
+      WATCHTOWER_POLL_INTERVAL: 60
+      WATCHTOWER_LABEL_ENABLE: 1
+    restart: on-failure
