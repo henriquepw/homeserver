@@ -10,5 +10,5 @@ services:
     environment:
       - TZ=America/Fortaleza
     ports:
-      - "5555:5000"
+      - "9903:5000"
     restart: unless-stopped
