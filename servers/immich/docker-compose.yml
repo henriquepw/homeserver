@@ -1,24 +1,13 @@
-#
-# WARNING: To install Immich, follow our guide: https://immich.app/docs/install/docker-compose
-#
-# Make sure to use the docker-compose.yml of the current release:
-#
-# https://github.com/immich-app/immich/releases/latest/download/docker-compose.yml
-#
-# The compose file on main may not be compatible with the latest release.
-
 name: immich
 
 services:
   immich-server:
     container_name: immich_server
-    image: ghcr.io/immich-app/immich-server:${IMMICH_VERSION:-release}
+    image: ghcr.io/immich-app/immich-server:${IMMICH_VERSION}
     volumes:
       - ${IMMICH_UPLOAD_LOCATION}:/usr/src/app/upload
       - ${IMMICH_PHOTOS}:/user/src/app/photos:ro
       - /etc/localtime:/etc/localtime:ro
-    env_file:
-      - .env
     ports:
       - "9905:2283"
     depends_on:

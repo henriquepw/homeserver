@@ -36,7 +36,6 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
-      TZ: America/Fortaleza
       WATCHTOWER_CLEANUP: 1
       WATCHTOWER_INCLUDE_RESTARTING: 1
       WATCHTOWER_POLL_INTERVAL: 60

@@ -1,6 +1,7 @@
 .DS_Store
 *.env
+!.env.example
 
 */immich/postgres
 
-servers/kavita/config
+*/reader/*/config
