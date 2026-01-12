@@ -1,43 +1,30 @@
+name: jellyfin
 services:
-  # jellyfin:
-  #   image: jellyfin/jellyfin:latest
-  #   container_name: jellyfin
-  #   ports:
-  #     - 8096:8096/tcp
-  #     - 7359:7359/udp
-  #   volumes:
-  #     - ./config:/config
-  #     - ./cache:/cache
-  #     - type: bind
-  #       source: /Volumes/Data/midia/videos
-  #       target: /media/videos
-  #     - type: bind
-  #       source: /Volumes/Data/midia/fonts
-  #       target: /usr/local/share/fonts/custom
-  #       read_only: true
-  #   restart: "unless-stopped"
-  #   environment:
-  #     - JELLYFIN_PublishedServerUrl=
-  #   extra_hosts:
-  #     - "host.docker.internal:host-gateway"
-  #
-  jellyfin_vue:
-    container_name: jellyfin_vue
-    image: ghcr.io/jellyfin/jellyfin-vue:unstable
-    restart: always
+  jellyfin:
+    image: jellyfin/jellyfin:latest
+    container_name: jellyfin
     ports:
-      - 9904:80
-    labels:
-      - "com.centurylinklabs.watchtower.enable=true"
-
-  watchtower:
-    container_name: watchtower
-    image: ghcr.io/nicholas-fedor/watchtower
+      - 8097:8096/tcp
+      - 7360:7359/udp
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - ./config:/config
+      - ./cache:/cache
+      - type: bind
+        source: ${MEDIA_DIR}/videos
+        target: /media/videos
+      - type: bind
+        source: ${MEDIA_DIR}/fonts
+        target: /usr/local/share/fonts/custom
+        read_only: true
+    restart: "unless-stopped"
     environment:
-      WATCHTOWER_CLEANUP: 1
-      WATCHTOWER_INCLUDE_RESTARTING: 1
-      WATCHTOWER_POLL_INTERVAL: 60
-      WATCHTOWER_LABEL_ENABLE: 1
-    restart: on-failure
+      - JELLYFIN_PublishedServerUrl=${JELLYFIN_URL}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    labels:
+      glance.hide: false
+      glance.id: jellyfin
+      glance.name: Jellyfin
+      glance.icon: si:jellyfin
+      glance.url: https://tv.henrique.pw
+      glance.description: Movies & shows

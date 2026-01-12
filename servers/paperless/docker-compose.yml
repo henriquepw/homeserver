@@ -1,10 +1,13 @@
+name: paperless
 services:
   broker:
+    container_name: paperless_broker
     image: docker.io/library/redis:8
     restart: unless-stopped
     volumes:
       - redisdata:/data
   db:
+    container_name: paperless_db
     image: docker.io/library/postgres:17
     restart: unless-stopped
     volumes:
@@ -14,6 +17,7 @@ services:
       POSTGRES_USER: paperless
       POSTGRES_PASSWORD: paperless
   webserver:
+    container_name: paperless_web
     image: ghcr.io/paperless-ngx/paperless-ngx:latest
     restart: unless-stopped
     depends_on:
@@ -36,6 +40,7 @@ services:
       PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://gotenberg:3000
       PAPERLESS_TIKA_ENDPOINT: http://tika:9998
   gotenberg:
+    container_name: paperless_gotenberg
     image: docker.io/gotenberg/gotenberg:8.20
     restart: unless-stopped
     command:
@@ -43,6 +48,7 @@ services:
       - "--chromium-disable-javascript=true"
       - "--chromium-allow-list=file:///tmp/.*"
   tika:
+    container_name: paperless_tika
     image: docker.io/apache/tika:latest
     restart: unless-stopped
 volumes:

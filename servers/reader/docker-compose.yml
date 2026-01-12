@@ -8,6 +8,13 @@ services:
     ports:
       - 9910:4567
     restart: unless-stopped
+    labels:
+      glance.hide: false
+      glance.id: suwayomi
+      glance.name: Suwayomi
+      glance.icon: si:suwayomi
+      glance.url: http://mini:9910
+      glance.description: Manga Downloader
 
   komf:
     image: sndxr/komf:latest
@@ -23,17 +30,21 @@ services:
     volumes:
       - ./komf/config:/config #path to directory with application.yml and database file
     restart: unless-stopped
+    labels:
+      glance.hide: false
+      glance.parent: komga
+      glance.name: Metadata
 
-  kavita:
-    image: jvmilazz0/kavita
-    volumes:
-      - ${MEDIA_DIR}/mangas:/mangas
-      - ${MEDIA_DIR}/comics:/comics
-      - ${MEDIA_DIR}/books:/books
-      - ./kavita/config:/kavita/config
-    ports:
-      - "9912:5000"
-    restart: unless-stopped
+  # kavita:
+  #   image: jvmilazz0/kavita
+  #   volumes:
+  #     - ${MEDIA_DIR}/mangas:/mangas
+  #     - ${MEDIA_DIR}/comics:/comics
+  #     - ${MEDIA_DIR}/books:/books
+  #     - ./kavita/config:/kavita/config
+  #   ports:
+  #     - "9912:5000"
+  #   restart: unless-stopped
 
   komga:
     image: gotson/komga
@@ -50,3 +61,10 @@ services:
     restart: unless-stopped
     env_file:
       - ../../.env
+    labels:
+      glance.hide: false
+      glance.id: komga
+      glance.name: Komga
+      glance.icon: si:komga
+      glance.url: http://mini:9913
+      glance.description: Manga & Comics
