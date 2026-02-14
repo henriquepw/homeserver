@@ -1,0 +1,120 @@
+name: "watcher"
+
+networks:
+  arr_net:
+    driver: bridge
+
+services:
+  qbittorrent:
+    container_name: qbittorrent
+    image: linuxserver/qbittorrent:latest
+    restart: unless-stopped
+    networks:
+      - arr_net
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - WEBUI_PORT=8080
+      - TORRENTING_PORT=62609
+    volumes:
+      - ${CONFIG_DIR}/qbittorrent/config:/config
+      - ${MEDIA_DIR}:/data
+    ports:
+      - "9950:8080"
+      - "62609:62609"
+
+  prowlarr:
+    container_name: prowlarr
+    image: ghcr.io/hotio/prowlarr:latest
+    restart: unless-stopped
+    networks:
+      - arr_net
+    depends_on:
+      - flaresolverr
+    environment:
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - ${CONFIG_DIR}/prowlarr/config:/config
+      - ./torrentio.yml:/var/lib/Definitions/Custom/torrentio.yml
+    ports:
+      - "9952:9696"
+
+  flaresolverr:
+    container_name: flaresolverr
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    restart: unless-stopped
+    networks:
+      - arr_net
+    environment:
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=1
+    ports:
+      - "9953:8191"
+
+  radarr:
+    container_name: radarr
+    image: ghcr.io/linuxserver/radarr:latest
+    restart: unless-stopped
+    networks:
+      - arr_net
+    depends_on:
+      - qbittorrent
+    environment:
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - ${CONFIG_DIR}/radarr/config:/config
+      - ${MEDIA_DIR}:/data
+    ports:
+      - "9954:7878"
+
+  sonarr:
+    container_name: sonarr
+    image: ghcr.io/linuxserver/sonarr:latest
+    restart: unless-stopped
+    networks:
+      - arr_net
+    depends_on:
+      - qbittorrent
+    environment:
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - ${CONFIG_DIR}/sonarr/config:/config
+      - ${MEDIA_DIR}:/data
+    ports:
+      - "9955:8989"
+
+  bazarr:
+    container_name: bazarr
+    image: ghcr.io/linuxserver/bazarr:latest
+    restart: unless-stopped
+    networks:
+      - arr_net
+    depends_on:
+      - radarr
+      - sonarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - ${CONFIG_DIR}/bazarr/config:/config
+      - ${MEDIA_DIR}:/data
+    ports:
+      - "9951:6767"
+
+  jackett:
+    container_name: jackett
+    image: ghcr.io/linuxserver/jackett:latest
+    restart: unless-stopped
+    networks:
+      - arr_net
+    environment:
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - ${CONFIG_DIR}/jackett/config:/config
+    ports:
+      - "9957:9117"
