@@ -1,7 +1,7 @@
 name: immich
 services:
   immich-server:
-    image: ghcr.io/immich-app/immich-server:${IMMICH_VERSION}
+    image: ghcr.io/immich-app/immich-server:latest
     volumes:
       - ${IMMICH_UPLOAD_LOCATION}:/usr/src/app/upload
       - ${IMMICH_PHOTOS}:/user/src/app/photos:ro
