@@ -1,7 +1,21 @@
 name: immich
 services:
+  power-tools:
+    container_name: power_tools
+    image: ghcr.io/varun-raj/immich-power-tools:latest
+    ports:
+      - "9906:3000"
+    labels:
+      glance.hide: false
+      glance.parent: immich
+      glance.name: Power Tools
+    environment:
+      DB_PORT: "5432"
+      DB_HOST: "postgres"
+
   immich-server:
-    image: ghcr.io/immich-app/immich-server:latest
+    container_name: server
+    image: ghcr.io/immich-app/immich-server:${IMMICH_VERSION}
     volumes:
       - ${IMMICH_UPLOAD_LOCATION}:/usr/src/app/upload
       - ${IMMICH_PHOTOS}:/user/src/app/photos:ro
@@ -23,6 +37,7 @@ services:
       glance.description: Image & video management
 
   immich-machine-learning:
+    container_name: machine_learning
     image: ghcr.io/immich-app/immich-machine-learning:${IMMICH_VERSION}
     volumes:
       - model-cache:/cache
@@ -35,6 +50,7 @@ services:
       glance.name: Machine Learning
 
   redis:
+    container_name: redis
     image: docker.io/valkey/valkey:8-bookworm@sha256:fec42f399876eb6faf9e008570597741c87ff7662a54185593e74b09ce83d177
     healthcheck:
       test: redis-cli ping || exit 1
@@ -45,6 +61,7 @@ services:
       glance.name: Redis
 
   database:
+    container_name: postgres
     image: ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0
     environment:
       POSTGRES_PASSWORD: ${IMMICH_DB_PASSWORD}
