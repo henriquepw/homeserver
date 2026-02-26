@@ -7,8 +7,8 @@ services:
       - 8097:8096/tcp
       - 7360:7359/udp
     volumes:
-      - ./config:/config
-      - ./cache:/cache
+      - ${APPS_DIR}/jellyfin/config:/config
+      - ${APPS_DIR}/jellyfin/cache:/cache
       - type: bind
         source: ${MEDIA_DIR}/videos
         target: /media/videos

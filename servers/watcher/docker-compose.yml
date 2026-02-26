@@ -17,7 +17,7 @@ services:
       - WEBUI_PORT=8080
       - TORRENTING_PORT=62609
     volumes:
-      - ${CONFIG_DIR}/qbittorrent/config:/config
+      - ${APPS_DIR}/qbittorrent/config:/config
       - ${MEDIA_DIR}:/data
     ports:
       - "9950:8080"
@@ -35,7 +35,7 @@ services:
       - PUID=1000
       - PGID=1000
     volumes:
-      - ${CONFIG_DIR}/prowlarr/config:/config
+      - ${APPS_DIR}/prowlarr/config:/config
       - ./torrentio.yml:/var/lib/Definitions/Custom/torrentio.yml
     ports:
       - "9952:9696"
@@ -65,7 +65,7 @@ services:
       - PUID=1000
       - PGID=1000
     volumes:
-      - ${CONFIG_DIR}/radarr/config:/config
+      - ${APPS_DIR}/radarr/config:/config
       - ${MEDIA_DIR}:/data
     ports:
       - "9954:7878"
@@ -82,7 +82,7 @@ services:
       - PUID=1000
       - PGID=1000
     volumes:
-      - ${CONFIG_DIR}/sonarr/config:/config
+      - ${APPS_DIR}/sonarr/config:/config
       - ${MEDIA_DIR}:/data
     ports:
       - "9955:8989"
@@ -100,7 +100,7 @@ services:
       - PUID=1000
       - PGID=1000
     volumes:
-      - ${CONFIG_DIR}/bazarr/config:/config
+      - ${APPS_DIR}/bazarr/config:/config
       - ${MEDIA_DIR}:/data
     ports:
       - "9951:6767"
@@ -115,6 +115,6 @@ services:
       - PUID=1000
       - PGID=1000
     volumes:
-      - ${CONFIG_DIR}/jackett/config:/config
+      - ${APPS_DIR}/jackett/config:/config
     ports:
       - "9957:9117"
