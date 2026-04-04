@@ -1,6 +1,5 @@
 - name: Home
-  # Optionally, if you only have a single page you can hide the desktop navigation for a cleaner look
-  # hide-desktop-navigation: true
+  hide-desktop-navigation: true
   columns:
     - size: small
       widgets:
@@ -33,22 +32,22 @@
         - type: group
           widgets:
             - type: reddit
+              subreddit: homelab
+              show-thumbnails: true
+            - type: reddit
               subreddit: SteamDeckModded
               show-thumbnails: true
             - type: reddit
-              subreddit: MechanicalKeyboards
-              show-thumbnails: true
-            - type: reddit
-              subreddit: selfhosted
-              show-thumbnails: true
-            - type: reddit
               subreddit: audiofiliabrasil
+              show-thumbnails: true
+            - type: reddit
+              subreddit: MechanicalKeyboards
               show-thumbnails: true
 
     - size: small
       widgets:
         - type: weather
-          location: Campina Grande, Brazil
+          location: ${LOCATION}
           units: metric
           hour-format: 24h
           hide-location: true
