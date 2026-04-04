@@ -1,80 +1,20 @@
 name: nextcloud
 services:
-  db:
-    container_name: db
-    image: mariadb:lts
-    command: --transaction-isolation=READ-COMMITTED
-    restart: always
-    volumes:
-      - db:/var/lib/mysql:Z
-    environment:
-      - MARIADB_AUTO_UPGRADE=1
-      - MARIADB_DISABLE_UPGRADE_BACKUP=1
-    labels:
-      glance.hide: false
-      glance.parent: nextcloud
-      glance.name: DB
-
-  redis:
-    container_name: redis
-    image: redis:alpine
-    restart: always
-    labels:
-      glance.hide: false
-      glance.parent: nextcloud
-      glance.name: redis
-
-  app:
-    container_name: app
-    image: nextcloud:fpm-alpine
-    restart: always
-    volumes:
-      - nextcloud:/var/www/html:z
-    environment:
-      - MYSQL_HOST=db
-      - REDIS_HOST=redis
-    depends_on:
-      - db
-      - redis
-    labels:
-      glance.hide: false
-      glance.id: nextcloud
-      glance.name: Nextcloud
-      glance.icon: si:nextcloud
-      glance.url: http://mini:9980
-      glance.description: Personal cloud
-
-  web:
-    container_name: web
-    image: nginx:alpine-slim
+  nextcloud-aio-mastercontainer:
+    image: ghcr.io/nextcloud-releases/all-in-one:latest
+    container_name: nextcloud-aio-mastercontainer
+    init: true
     restart: always
     ports:
-      - 9980:80
+      - "9980:8080"
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      - nextcloud:/var/www/html:z,ro
-    depends_on:
-      - app
+      - nextcloud_aio_mastercontainer:/mnt/docker-aio-config
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    tty: true
     labels:
       glance.hide: false
-      glance.parent: nextcloud
-      glance.name: nginx
-
-  cron:
-    container_name: cron
-    image: nextcloud:fpm-alpine
-    restart: always
-    volumes:
-      - nextcloud:/var/www/html:z
-    entrypoint: /cron.sh
-    depends_on:
-      - db
-      - redis
-    labels:
-      glance.hide: false
-      glance.parent: nextcloud
-      glance.name: cron
+      glance.name: Nextcloud
 
 volumes:
-  db:
-  nextcloud:
+  nextcloud_aio_mastercontainer:
+    external: true

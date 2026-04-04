@@ -4,7 +4,7 @@ services:
     image: jellyfin/jellyfin:latest
     container_name: jellyfin
     ports:
-      - 8097:8096/tcp
+      - 9920:8096/tcp
       - 7360:7359/udp
     volumes:
       - ${APPS_DIR}/jellyfin/config:/config
