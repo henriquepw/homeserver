@@ -4,11 +4,14 @@ services:
     container_name: adguard
     restart: unless-stopped
 
+    env_file: ../../.env
+
     volumes:
-      - ${APP_DIR}/adguard/data:/opt/adguardhome/work
-      - ${APP_DIR}/adguard/config:/opt/adguardhome/conf
+      - ${APPS_DIR}/adguard/data:/opt/adguardhome/work
+      - ${APPS_DIR}/adguard/config:/opt/adguardhome/conf
 
     ports:
       - "53:53/tcp"
       - "53:53/udp"
       - "8080:80/tcp"
+      - 3000:3000
