@@ -1,0 +1,64 @@
+name: cloudreve
+services:
+  cloudreve:
+    image: cloudreve/cloudreve:v4
+    container_name: cloudreve
+    depends_on:
+      tika:
+        condition: service_started
+      meilisearch:
+        condition: service_started
+      postgresql:
+        condition: service_started
+      redis:
+        condition: service_started
+    restart: unless-stopped
+    ports:
+      - 9930:5212
+      - 6888:6888
+      - 6888:6888/udp
+    environment:
+      - CR_SETTING_DEFAULT_fts_meilisearch_api_key=${MEILI_MASTER_KEY}
+      - CR_SETTING_DEFAULT_fts_meilisearch_endpoint=http://meilisearch:7700
+      - CR_SETTING_DEFAULT_fts_enabled=1
+      - CR_SETTING_DEFAULT_fts_tika_endpoint=http://tika:9998
+      - CR_CONF_Database.Type=postgres
+      - CR_CONF_Database.Host=postgresql
+      - CR_CONF_Database.User=cloudreve
+      - CR_CONF_Database.Name=cloudreve
+      - CR_CONF_Database.Port=5432
+      - CR_CONF_Redis.Server=redis:6379
+    volumes:
+      - ${MEDIA_DIR}:/cloudreve/data/media
+
+  postgresql:
+    image: postgres:17
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=cloudreve
+      - POSTGRES_DB=cloudreve
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    volumes:
+      - ${APPS_DIR}/cloudreve/postgres:/var/lib/postgresql/data
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    restart: unless-stopped
+    volumes:
+      - ${APPS_DIR}/cloudreve/redis:/data
+
+  tika:
+    image: apache/tika:latest
+    container_name: tika
+    restart: unless-stopped
+
+  meilisearch:
+    image: getmeili/meilisearch:latest
+    container_name: meilisearch
+    restart: unless-stopped
+    environment:
+      - MEILI_MASTER_KEY=${MEILI_MASTER_KEY}
+    volumes:
+      - ${APPS_DIR}/cloudreve/meili:/meili_data
