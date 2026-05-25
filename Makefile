@@ -21,7 +21,7 @@ update: down
 	@for dir in servers/*; do \
 		[ "$${dir}" = "servers/adguard" ] && continue; \
 		echo ">>> Updating $$dir"; \
-		docker compose -f "$${dir}/docker-compose.yml" \
+		docker compose -f "$${dir}/compose.yml" \
 		             --env-file .env \
 		             pull; \
 	done
