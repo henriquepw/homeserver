@@ -193,6 +193,65 @@ services:
     ports:
       - "9959:6789"
 
+  tdarr:
+    container_name: tdarr
+    image: ghcr.io/haveagitgat/tdarr:latest
+    restart: unless-stopped
+    networks:
+      - arr_net
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - serverIP=0.0.0.0
+      - serverPort=8266
+      - webUIPort=8265
+      - internalNode=true
+      - inContainer=true
+      - nodeName=tdarr-internal
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${APPS_DIR}/tdarr/server:/app/server
+      - ${APPS_DIR}/tdarr/configs:/app/configs
+      - ${APPS_DIR}/tdarr/logs:/app/logs
+      - ${MEDIA_DIR}:/data
+      - ${APPS_DIR}/tdarr/transcode_cache:/temp
+    ports:
+      - "9960:8265"
+      - "9961:8266"
+    labels:
+      glance.hide: false
+      glance.id: tdarr
+      glance.name: Tdarr
+      glance.icon: si:tdarr
+      glance.url: https://tdarr.henrique.pw
+      glance.description: Media transcoding
+
+  navidrome:
+    container_name: navidrome
+    image: deluan/navidrome:latest
+    restart: unless-stopped
+    networks:
+      - arr_net
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - ND_SCANSCHEDULE=1h
+      - ND_LOGLEVEL=info
+    volumes:
+      - ${APPS_DIR}/navidrome:/data
+      - ${MEDIA_DIR}/musics:/music:ro
+    ports:
+      - "9962:4533"
+    labels:
+      glance.hide: false
+      glance.id: navidrome
+      glance.name: Navidrome
+      glance.icon: si:navidrome
+      glance.url: https://music.henrique.pw
+      glance.description: Music streaming
+
   jellyfin:
     image: jellyfin/jellyfin:latest
     container_name: jellyfin
