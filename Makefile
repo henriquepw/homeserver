@@ -17,12 +17,9 @@ down:
 	done
 
 .PHONY: update
-update: down
+update:
 	@for dir in servers/*; do \
-		[ "$${dir}" = "servers/adguard" ] && continue; \
 		echo ">>> Updating $$dir"; \
-		docker compose -f "$${dir}/compose.yml" \
-		             --env-file .env \
-		             pull; \
+		docker compose -f "$${dir}/compose.yml" --env-file .env pull; \
+		docker compose -f "$${dir}/compose.yml" --env-file .env up -d; \
 	done
-	@$(MAKE) up
