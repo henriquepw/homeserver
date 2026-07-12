@@ -1,13 +1,15 @@
 name: reader
+
 services:
   suwayomi:
     image: ghcr.io/suwayomi/suwayomi-server:stable
+    container_name: suwayomi
+    restart: unless-stopped
     volumes: # The order matters! Make sure the downloads is first in the volume list or it will not work!
       - ${MEDIA_DIR}/mangas:/home/suwayomi/.local/share/Tachidesk/downloads
       - ${MEDIA_DIR}/tachidesk:/home/suwayomi/.local/share/Tachidesk
     ports:
-      - 9910:4567
-    restart: unless-stopped
+      - "9910:4567"
     labels:
       glance.hide: false
       glance.id: suwayomi
@@ -18,8 +20,8 @@ services:
 
   komf:
     image: sndxr/komf:latest
-    ports:
-      - "9911:8085"
+    container_name: komf
+    restart: unless-stopped
     user: "1000:1000"
     environment:
       - KOMF_KOMGA_BASE_URI=http://komga:9913
@@ -29,7 +31,8 @@ services:
       - JAVA_TOOL_OPTIONS=-XX:+UnlockExperimentalVMOptions -XX:+UseShenandoahGC -XX:ShenandoahGCHeuristics=compact -XX:ShenandoahGuaranteedGCInterval=3600000 -XX:TrimNativeHeapInterval=3600000
     volumes:
       - ./komf/config:/config #path to directory with application.yml and database file
-    restart: unless-stopped
+    ports:
+      - "9911:8085"
     labels:
       glance.hide: false
       glance.parent: komga
@@ -37,6 +40,8 @@ services:
 
   # kavita:
   #   image: jvmilazz0/kavita
+  #   container_name: kavita
+  #   restart: unless-stopped
   #   volumes:
   #     - ${MEDIA_DIR}/mangas:/mangas
   #     - ${MEDIA_DIR}/comics:/comics
@@ -44,10 +49,14 @@ services:
   #     - ./kavita/config:/kavita/config
   #   ports:
   #     - "9912:5000"
-  #   restart: unless-stopped
 
   komga:
     image: gotson/komga
+    container_name: komga
+    restart: unless-stopped
+    user: "1000:1000"
+    env_file:
+      - ../../.env
     volumes:
       - type: bind
         source: ./komga/config
@@ -56,11 +65,7 @@ services:
         source: ${MEDIA_DIR}
         target: /data
     ports:
-      - 9913:25600
-    user: "1000:1000"
-    restart: unless-stopped
-    env_file:
-      - ../../.env
+      - "9913:25600"
     labels:
       glance.hide: false
       glance.id: komga
