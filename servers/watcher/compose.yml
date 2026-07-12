@@ -206,7 +206,7 @@ services:
       - serverIP=0.0.0.0
       - serverPort=8266
       - webUIPort=8265
-      - internalNode=true
+      - internalNode=false
       - inContainer=true
       - nodeName=tdarr-internal
     volumes:
@@ -214,7 +214,8 @@ services:
       - ${APPS_DIR}/tdarr/server:/app/server
       - ${APPS_DIR}/tdarr/configs:/app/configs
       - ${APPS_DIR}/tdarr/logs:/app/logs
-      - ${MEDIA_DIR}:/data
+      # Mesmo path do host para casar com o node nativo do macOS (Tdarr nao traduz paths entre nodes)
+      - ${MEDIA_DIR}:${MEDIA_DIR}
       - ${APPS_DIR}/tdarr/transcode_cache:/temp
     ports:
       - "9960:8265"
