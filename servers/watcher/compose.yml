@@ -193,9 +193,11 @@ services:
     ports:
       - "9959:6789"
 
-  tdarr:
-    container_name: tdarr
-    image: ghcr.io/haveagitgat/tdarr:latest
+  fileflows:
+    container_name: fileflows
+    image: revenz/fileflows:latest
+    # arm64 nativo: entrypoint pula o install do driver intel (so-amd64, quebra com set -e) e evita emulacao
+    platform: linux/arm64
     restart: unless-stopped
     networks:
       - arr_net
@@ -203,29 +205,22 @@ services:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
-      - serverIP=0.0.0.0
-      - serverPort=8266
-      - webUIPort=8265
-      - internalNode=false
-      - inContainer=true
-      - nodeName=tdarr-internal
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ${APPS_DIR}/tdarr/server:/app/server
-      - ${APPS_DIR}/tdarr/configs:/app/configs
-      - ${APPS_DIR}/tdarr/logs:/app/logs
-      # Mesmo path do host para casar com o node nativo do macOS (Tdarr nao traduz paths entre nodes)
+      - ${APPS_DIR}/fileflows/data:/app/Data
+      - ${APPS_DIR}/fileflows/logs:/app/Logs
+      - ${APPS_DIR}/fileflows/temp:/temp
+      # Mesmo path do host para casar com o node nativo do macOS (evita path mapping entre nodes)
       - ${MEDIA_DIR}:${MEDIA_DIR}
-      - ${APPS_DIR}/tdarr/transcode_cache:/temp
     ports:
-      - "9960:8265"
-      - "9961:8266"
+      # webUI + node connect port (nodes registram no server nesta mesma porta)
+      - "9960:5000"
     labels:
       glance.hide: false
-      glance.id: tdarr
-      glance.name: Tdarr
-      glance.icon: si:tdarr
-      glance.url: https://tdarr.henrique.pw
+      glance.id: fileflows
+      glance.name: FileFlows
+      glance.icon: si:fileflows
+      glance.url: https://fileflows.henrique.pw
       glance.description: Media transcoding
 
   navidrome:
