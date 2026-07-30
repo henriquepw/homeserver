@@ -1,9 +1,18 @@
 name: cloudflare
+
+networks:
+  dnet:
+    external: true
+
 services:
+  # Publicly exposes tv.henrique.pw only. Ingress lives in the Cloudflare
+  # dashboard and must target https://nginx:443; port 80 loops on the 301.
   cloudflared:
     image: cloudflare/cloudflared:latest
     container_name: cloudflared
     restart: unless-stopped
+    networks:
+      - dnet
     environment:
       - TUNNEL_TOKEN=${TUNNEL_TOKEN}
     command: tunnel --no-autoupdate run --token ${TUNNEL_TOKEN}

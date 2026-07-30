@@ -1,8 +1,8 @@
 name: "watcher"
 
 networks:
-  arr_net:
-    driver: bridge
+  dnet:
+    external: true
 
 services:
   qbittorrent:
@@ -10,7 +10,8 @@ services:
     image: linuxserver/qbittorrent:latest
     restart: unless-stopped
     networks:
-      - arr_net
+      - default
+      - dnet
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
@@ -22,6 +23,7 @@ services:
       - ${MEDIA_DIR}:/data
     ports:
       - "9950:8080"
+      # Stays published: torrenting port, must be reachable directly.
       - "62609:62609"
     healthcheck:
       test: ping -c 1 www.google.com || exit 1
@@ -35,7 +37,8 @@ services:
     image: ghcr.io/hotio/prowlarr:latest
     restart: unless-stopped
     networks:
-      - arr_net
+      - default
+      - dnet
     depends_on:
       - flaresolverr
     environment:
@@ -48,12 +51,11 @@ services:
     ports:
       - "9951:9696"
 
+  # No domain, off dnet: headless browser API used only by prowlarr.
   flaresolverr:
     container_name: flaresolverr
     image: ghcr.io/flaresolverr/flaresolverr:latest
     restart: unless-stopped
-    networks:
-      - arr_net
     environment:
       - LOG_LEVEL=${LOG_LEVEL:-info}
       - LOG_HTML=${LOG_HTML:-false}
@@ -69,7 +71,8 @@ services:
     image: ghcr.io/linuxserver/radarr:latest
     restart: unless-stopped
     networks:
-      - arr_net
+      - default
+      - dnet
     depends_on:
       - qbittorrent
     environment:
@@ -88,7 +91,8 @@ services:
     image: ghcr.io/linuxserver/sonarr:latest
     restart: unless-stopped
     networks:
-      - arr_net
+      - default
+      - dnet
     depends_on:
       - qbittorrent
     environment:
@@ -107,7 +111,8 @@ services:
     image: lscr.io/linuxserver/lidarr:latest
     restart: unless-stopped
     networks:
-      - arr_net
+      - default
+      - dnet
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${APPS_DIR}/lidarr:/config
@@ -124,7 +129,8 @@ services:
     image: ghcr.io/linuxserver/bazarr:latest
     restart: unless-stopped
     networks:
-      - arr_net
+      - default
+      - dnet
     depends_on:
       - radarr
       - sonarr
@@ -143,7 +149,8 @@ services:
     container_name: seerr
     image: ghcr.io/seerr-team/seerr:latest
     networks:
-      - arr_net
+      - default
+      - dnet
     environment:
       - LOG_LEVEL=debug
       - PUID=${PUID}
@@ -166,7 +173,8 @@ services:
     image: ghcr.io/linuxserver/jackett:latest
     restart: unless-stopped
     networks:
-      - arr_net
+      - default
+      - dnet
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
@@ -181,7 +189,8 @@ services:
     container_name: nzbget
     restart: unless-stopped
     networks:
-      - arr_net
+      - default
+      - dnet
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
@@ -196,11 +205,12 @@ services:
   fileflows:
     container_name: fileflows
     image: revenz/fileflows:latest
-    # arm64 nativo: entrypoint pula o install do driver intel (so-amd64, quebra com set -e) e evita emulacao
+    # Native arm64: skips the amd64 intel driver install that breaks under set -e.
     platform: linux/arm64
     restart: unless-stopped
     networks:
-      - arr_net
+      - default
+      - dnet
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
@@ -210,10 +220,11 @@ services:
       - ${APPS_DIR}/fileflows/data:/app/Data
       - ${APPS_DIR}/fileflows/logs:/app/Logs
       - ${APPS_DIR}/fileflows/temp:/temp
-      # Mesmo path do host para casar com o node nativo do macOS (evita path mapping entre nodes)
+      # Same host path as the native macOS node, so no per-node path mapping.
       - ${MEDIA_DIR}:${MEDIA_DIR}
     ports:
-      # webUI + node connect port (nodes registram no server nesta mesma porta)
+      # Stays published despite having a domain: the native macOS node registers
+      # at http://127.0.0.1:9960 (see FF_SERVER_URL in the Makefile).
       - "9960:5000"
     labels:
       glance.hide: false
@@ -228,7 +239,8 @@ services:
     image: deluan/navidrome:latest
     restart: unless-stopped
     networks:
-      - arr_net
+      - default
+      - dnet
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
@@ -253,6 +265,7 @@ services:
     container_name: jellyfin
     ports:
       - 9920:8096/tcp
+      # Stays published: LAN client discovery, not HTTP.
       - 7360:7359/udp
     volumes:
       - ${APPS_DIR}/jellyfin/config:/config
@@ -270,7 +283,8 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     networks:
-      - arr_net
+      - default
+      - dnet
     labels:
       glance.hide: false
       glance.id: jellyfin

@@ -1,8 +1,16 @@
 name: glance
+
+networks:
+  dnet:
+    external: true
+
 services:
   glance:
     image: glanceapp/glance
+    container_name: glance
     restart: unless-stopped
+    networks:
+      - dnet
     volumes:
       - ./config:/app/config
       - ./assets:/app/assets

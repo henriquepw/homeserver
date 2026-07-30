@@ -1,21 +1,35 @@
 name: immich
+
+networks:
+  dnet:
+    external: true
+
 services:
   power-tools:
     container_name: power_tools
     image: ghcr.io/varun-raj/immich-power-tools:latest
+    networks:
+      # dnet for nginx, default for postgres.
+      - default
+      - dnet
     ports:
       - "9906:3000"
     labels:
       glance.hide: false
       glance.parent: immich
       glance.name: Power Tools
+      glance.url: https://photo-tools.henrique.pw
     environment:
       DB_PORT: "5432"
       DB_HOST: "postgres"
 
   immich-server:
-    container_name: server
+    # Renamed from "server": too generic for a shared DNS namespace like dnet.
+    container_name: immich-server
     image: ghcr.io/immich-app/immich-server:${IMMICH_VERSION}
+    networks:
+      - default
+      - dnet
     volumes:
       - ${IMMICH_UPLOAD_LOCATION}:/usr/src/app/upload
       - ${IMMICH_PHOTOS}:/user/src/app/photos:ro
@@ -33,9 +47,10 @@ services:
       glance.id: immich
       glance.name: Immich
       glance.icon: si:immich
-      glance.url: http://mini:9905
+      glance.url: https://photos.henrique.pw
       glance.description: Image & video management
 
+  # Internal network only: no UI, no reason to be reachable outside the stack.
   immich-machine-learning:
     container_name: machine_learning
     image: ghcr.io/immich-app/immich-machine-learning:${IMMICH_VERSION}

@@ -1,3 +1,9 @@
+name: adguard
+
+networks:
+  dnet:
+    external: true
+
 services:
   adguard:
     image: adguard/adguardhome
@@ -6,12 +12,15 @@ services:
 
     env_file: ../../.env
 
+    networks:
+      - dnet
+
     volumes:
       - ${APPS_DIR}/adguard/data:/opt/adguardhome/work
       - ${APPS_DIR}/adguard/config:/opt/adguardhome/conf
 
     ports:
+      # Stays published: LAN resolver, not HTTP, never goes through nginx.
       - "53:53/tcp"
       - "53:53/udp"
       - "8080:80/tcp"
-      - 3000:3000

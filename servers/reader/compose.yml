@@ -1,10 +1,17 @@
 name: reader
 
+networks:
+  dnet:
+    external: true
+
 services:
   suwayomi:
     image: ghcr.io/suwayomi/suwayomi-server:stable
     container_name: suwayomi
     restart: unless-stopped
+    networks:
+      - default
+      - dnet
     volumes: # The order matters! Make sure the downloads is first in the volume list or it will not work!
       - ${MEDIA_DIR}/mangas:/home/suwayomi/.local/share/Tachidesk/downloads
       - ${MEDIA_DIR}/tachidesk:/home/suwayomi/.local/share/Tachidesk
@@ -15,7 +22,7 @@ services:
       glance.id: suwayomi
       glance.name: Suwayomi
       glance.icon: si:suwayomi
-      glance.url: http://mini:9910
+      glance.url: https://suwayomi.henrique.pw
       glance.description: Manga Downloader
 
   komf:
@@ -23,8 +30,13 @@ services:
     container_name: komf
     restart: unless-stopped
     user: "1000:1000"
+    networks:
+      - default
+      - dnet
     environment:
-      - KOMF_KOMGA_BASE_URI=http://komga:9913
+      # 25600 is komga's internal port; 9913 was the host port and never worked
+      # from in here (unnoticed because eventListener is disabled).
+      - KOMF_KOMGA_BASE_URI=http://komga:25600
       - KOMF_KOMGA_USER=henriquepw4@gmail.com
       - KOMF_KOMGA_PASSWORD=123123
       - KOMF_LOG_LEVEL=INFO
@@ -37,6 +49,7 @@ services:
       glance.hide: false
       glance.parent: komga
       glance.name: Metadata
+      glance.url: https://komf.henrique.pw
 
   # kavita:
   #   image: jvmilazz0/kavita
@@ -55,6 +68,9 @@ services:
     container_name: komga
     restart: unless-stopped
     user: "1000:1000"
+    networks:
+      - default
+      - dnet
     env_file:
       - ../../.env
     volumes:
@@ -71,5 +87,5 @@ services:
       glance.id: komga
       glance.name: Komga
       glance.icon: si:komga
-      glance.url: http://mini:9913
+      glance.url: https://manga.henrique.pw
       glance.description: Manga & Comics
