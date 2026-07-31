@@ -16,7 +16,5 @@ services:
       - ./assets:/app/assets
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
-    ports:
-      - 9900:8080
     env_file:
       - ../../.env

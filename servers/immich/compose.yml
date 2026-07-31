@@ -12,8 +12,6 @@ services:
       # dnet for nginx, default for postgres.
       - default
       - dnet
-    ports:
-      - "9906:3000"
     labels:
       glance.hide: false
       glance.parent: immich
@@ -34,8 +32,6 @@ services:
       - ${IMMICH_UPLOAD_LOCATION}:/usr/src/app/upload
       - ${IMMICH_PHOTOS}:/user/src/app/photos:ro
       - /etc/localtime:/etc/localtime:ro
-    ports:
-      - "9905:2283"
     depends_on:
       - redis
       - database

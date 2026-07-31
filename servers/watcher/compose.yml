@@ -22,7 +22,6 @@ services:
       - ${APPS_DIR}/qbittorrent/config:/config
       - ${MEDIA_DIR}:/data
     ports:
-      - "9950:8080"
       # Stays published: torrenting port, must be reachable directly.
       - "62609:62609"
     healthcheck:
@@ -48,8 +47,6 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${APPS_DIR}/prowlarr/config:/config
-    ports:
-      - "9951:9696"
 
   # No domain, off dnet: headless browser API used only by prowlarr.
   flaresolverr:
@@ -63,8 +60,6 @@ services:
       - TZ=${TZ}
     sysctls:
       - net.ipv6.conf.all.disable_ipv6=1
-    ports:
-      - "9952:8191"
 
   radarr:
     container_name: radarr
@@ -83,8 +78,6 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - ${APPS_DIR}/radarr/config:/config
       - ${MEDIA_DIR}:/data
-    ports:
-      - "9953:7878"
 
   sonarr:
     container_name: sonarr
@@ -103,8 +96,6 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - ${APPS_DIR}/sonarr/config:/config
       - ${MEDIA_DIR}:/data
-    ports:
-      - "9954:8989"
 
   lidarr:
     container_name: lidarr
@@ -121,8 +112,6 @@ services:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
-    ports:
-      - 9955:8686
 
   bazarr:
     container_name: bazarr
@@ -142,8 +131,6 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - ${APPS_DIR}/bazarr/config:/config
       - ${MEDIA_DIR}:/data
-    ports:
-      - "9956:6767"
 
   seerr:
     container_name: seerr
@@ -165,8 +152,6 @@ services:
     restart: unless-stopped
     volumes:
       - ${APPS_DIR}/seerr:/app/config
-    ports:
-      - 9957:5055
 
   jackett:
     container_name: jackett
@@ -181,8 +166,6 @@ services:
       - TZ=${TZ}
     volumes:
       - ${APPS_DIR}/jackett/config:/config
-    ports:
-      - "9958:9117"
 
   nzbget:
     image: lscr.io/linuxserver/nzbget:latest
@@ -199,8 +182,6 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - ${APPS_DIR}/nzbget:/config
       - ${MEDIA_DIR}:/data
-    ports:
-      - "9959:6789"
 
   fileflows:
     container_name: fileflows
@@ -250,8 +231,6 @@ services:
     volumes:
       - ${APPS_DIR}/navidrome:/data
       - ${MEDIA_DIR}/musics:/music:ro
-    ports:
-      - "9962:4533"
     labels:
       glance.hide: false
       glance.id: navidrome
@@ -264,7 +243,6 @@ services:
     image: jellyfin/jellyfin:latest
     container_name: jellyfin
     ports:
-      - 9920:8096/tcp
       # Stays published: LAN client discovery, not HTTP.
       - 7360:7359/udp
     volumes:
