@@ -1,0 +1,62 @@
+name: n8n
+
+networks:
+  dnet:
+    external: true
+
+services:
+  postgres:
+    container_name: n8n-postgres
+    image: postgres:16-alpine
+    restart: unless-stopped
+    networks:
+      - default
+    labels:
+      glance.hide: true
+      glance.id: n8n-postgres
+      glance.name: DB
+      glance.parent: n8n
+      glance.description: PostgreSQL database
+    environment:
+      POSTGRES_USER: ${N8N_DB_USER:-n8n}
+      POSTGRES_PASSWORD: ${N8N_DB_PASSWORD:-n8n}
+      POSTGRES_DB: ${N8N_DB_NAME:-n8n}
+    volumes:
+      - ${APPS_DIR}/n8n/postgres:/var/lib/postgresql/data
+
+  n8n:
+    container_name: n8n
+    image: docker.n8n.io/n8nio/n8n:latest
+    restart: unless-stopped
+    networks:
+      - default
+      - dnet
+    depends_on:
+      - postgres
+    env_file:
+      - ../../.env
+    environment:
+      TZ: ${TZ}
+      GENERIC_TIMEZONE: ${TZ}
+      N8N_HOST: ${N8N_HOST:-n8n.henrique.pw}
+      N8N_PROTOCOL: ${N8N_PROTOCOL:-https}
+      N8N_PORT: 5678
+      N8N_EDITOR_BASE_URL: ${N8N_EDITOR_BASE_URL:-https://n8n.henrique.pw}
+      WEBHOOK_URL: ${WEBHOOK_URL:-https://n8n.henrique.pw}
+      N8N_SECURE_COOKIE: "true"
+      N8N_ENCRYPTION_KEY: ${N8N_ENCRYPTION_KEY}
+      DB_TYPE: postgresdb
+      DB_POSTGRESDB_HOST: postgres
+      DB_POSTGRESDB_PORT: 5432
+      DB_POSTGRESDB_DATABASE: ${N8N_DB_NAME:-n8n}
+      DB_POSTGRESDB_USER: ${N8N_DB_USER:-n8n}
+      DB_POSTGRESDB_PASSWORD: ${N8N_DB_PASSWORD:-n8n}
+    volumes:
+      - ${APPS_DIR}/n8n/data:/home/node/.n8n
+    labels:
+      glance.hide: false
+      glance.id: n8n
+      glance.name: n8n
+      glance.icon: si:n8n
+      glance.url: https://n8n.henrique.pw
+      glance.description: Workflow automation
