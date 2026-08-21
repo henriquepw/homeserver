@@ -15,6 +15,14 @@ services:
     networks:
       - dnet
 
+    labels:
+      glance.hide: false
+      glance.id: adguard
+      glance.name: AdGuard Home
+      glance.icon: si:adguard
+      glance.url: https://dns.henrique.pw
+      glance.description: DNS filtering and blocking
+
     volumes:
       - ${APPS_DIR}/adguard/data:/opt/adguardhome/work
       - ${APPS_DIR}/adguard/config:/opt/adguardhome/conf

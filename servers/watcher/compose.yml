@@ -12,6 +12,13 @@ services:
     networks:
       - default
       - dnet
+    labels:
+      glance.hide: false
+      glance.id: qbittorrent
+      glance.name: qBittorrent
+      glance.icon: si:qbittorrent
+      glance.url: https://torrent.henrique.pw
+      glance.description: BitTorrent client
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
@@ -38,6 +45,13 @@ services:
     networks:
       - default
       - dnet
+    labels:
+      glance.hide: false
+      glance.id: prowlarr
+      glance.name: Prowlarr
+      glance.icon: si:prowlarr
+      glance.url: https://prowlarr.henrique.pw
+      glance.description: Indexer manager
     depends_on:
       - flaresolverr
     environment:
@@ -53,6 +67,12 @@ services:
     container_name: flaresolverr
     image: ghcr.io/flaresolverr/flaresolverr:latest
     restart: unless-stopped
+    labels:
+      glance.hide: true
+      glance.id: flaresolverr
+      glance.name: FlareSolverr
+      glance.parent: prowlarr
+      glance.description: Cloudflare challenge solver
     environment:
       - LOG_LEVEL=${LOG_LEVEL:-info}
       - LOG_HTML=${LOG_HTML:-false}
@@ -68,6 +88,13 @@ services:
     networks:
       - default
       - dnet
+    labels:
+      glance.hide: false
+      glance.id: radarr
+      glance.name: Radarr
+      glance.icon: si:radarr
+      glance.url: https://radarr.henrique.pw
+      glance.description: Movies automation
     depends_on:
       - qbittorrent
     environment:
@@ -86,6 +113,13 @@ services:
     networks:
       - default
       - dnet
+    labels:
+      glance.hide: false
+      glance.id: sonarr
+      glance.name: Sonarr
+      glance.icon: si:sonarr
+      glance.url: https://sonarr.henrique.pw
+      glance.description: TV automation
     depends_on:
       - qbittorrent
     environment:
@@ -104,6 +138,13 @@ services:
     networks:
       - default
       - dnet
+    labels:
+      glance.hide: false
+      glance.id: lidarr
+      glance.name: Lidarr
+      glance.icon: si:lidarr
+      glance.url: https://lidarr.henrique.pw
+      glance.description: Music automation
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${APPS_DIR}/lidarr:/config
@@ -120,6 +161,13 @@ services:
     networks:
       - default
       - dnet
+    labels:
+      glance.hide: false
+      glance.id: bazarr
+      glance.name: Bazarr
+      glance.icon: si:bazarr
+      glance.url: https://bazarr.henrique.pw
+      glance.description: Subtitle manager
     depends_on:
       - radarr
       - sonarr
@@ -138,6 +186,13 @@ services:
     networks:
       - default
       - dnet
+    labels:
+      glance.hide: false
+      glance.id: seerr
+      glance.name: Seerr
+      glance.icon: si:overseerr
+      glance.url: https://tvv.henrique.pw
+      glance.description: Media requests
     environment:
       - LOG_LEVEL=debug
       - PUID=${PUID}
@@ -160,6 +215,13 @@ services:
     networks:
       - default
       - dnet
+    labels:
+      glance.hide: false
+      glance.id: jackett
+      glance.name: Jackett
+      glance.icon: si:jackett
+      glance.url: https://jackett.henrique.pw
+      glance.description: Indexer manager
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
@@ -174,6 +236,13 @@ services:
     networks:
       - default
       - dnet
+    labels:
+      glance.hide: false
+      glance.id: nzbget
+      glance.name: NZBGet
+      glance.icon: si:nzbget
+      glance.url: https://nzbget.henrique.pw
+      glance.description: Usenet downloader
     environment:
       - PUID=${PUID}
       - PGID=${PGID}

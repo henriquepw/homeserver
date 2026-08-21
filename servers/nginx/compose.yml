@@ -11,6 +11,11 @@ services:
     restart: unless-stopped
     networks:
       - dnet
+    labels:
+      glance.hide: true
+      glance.id: nginx
+      glance.name: Nginx
+      glance.description: Reverse proxy
     ports:
       - "80:80"
       - "443:443"
@@ -32,6 +37,11 @@ services:
     restart: unless-stopped
     networks:
       - dnet
+    labels:
+      glance.hide: true
+      glance.id: acme
+      glance.name: ACME
+      glance.description: Certificate renewal
     environment:
       - CF_Token=${CF_Token}
     volumes:

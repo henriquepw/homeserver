@@ -13,6 +13,11 @@ services:
     restart: unless-stopped
     networks:
       - dnet
+    labels:
+      glance.hide: true
+      glance.id: cloudflared
+      glance.name: Cloudflared
+      glance.description: Cloudflare tunnel
     environment:
       - TUNNEL_TOKEN=${TUNNEL_TOKEN}
     command: tunnel --no-autoupdate run --token ${TUNNEL_TOKEN}
