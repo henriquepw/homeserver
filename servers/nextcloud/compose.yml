@@ -1,0 +1,108 @@
+name: nextcloud
+
+networks:
+  dnet:
+    external: true
+
+services:
+  db:
+    container_name: nextcloud-db
+    image: mariadb:11.4
+    restart: unless-stopped
+    command:
+      - --transaction-isolation=READ-COMMITTED
+      - --binlog-format=ROW
+      - --innodb-read-only-compressed=OFF
+    labels:
+      glance.hide: true
+      glance.id: nextcloud-db
+      glance.name: DB
+      glance.parent: nextcloud
+      glance.description: MariaDB database
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-nextcloud}
+      MYSQL_USER: ${MYSQL_USER:-nextcloud}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - ${APPS_DIR}/nextcloud/db:/var/lib/mysql
+
+  redis:
+    container_name: nextcloud-redis
+    image: redis:7-alpine
+    restart: unless-stopped
+    labels:
+      glance.hide: true
+      glance.id: nextcloud-redis
+      glance.name: Redis
+      glance.parent: nextcloud
+      glance.description: Cache store
+
+  nextcloud:
+    container_name: nextcloud
+    image: nextcloud:apache
+    restart: unless-stopped
+    networks:
+      - default
+      - dnet
+    depends_on:
+      - db
+      - redis
+    env_file:
+      - ../.env
+    environment:
+      TZ: ${TZ}
+      MYSQL_HOST: db
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-nextcloud}
+      MYSQL_USER: ${MYSQL_USER:-nextcloud}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      NEXTCLOUD_ADMIN_USER: ${NEXTCLOUD_ADMIN_USER}
+      NEXTCLOUD_ADMIN_PASSWORD: ${NEXTCLOUD_ADMIN_PASSWORD}
+      NEXTCLOUD_DATA_DIR: ${NEXTCLOUD_DATA_DIR:-/var/www/html/data}
+      NEXTCLOUD_TRUSTED_DOMAINS: ${NEXTCLOUD_TRUSTED_DOMAINS:-nextcloud.henrique.pw}
+      REDIS_HOST: redis
+      REDIS_HOST_PORT: 6379
+      APACHE_DISABLE_REWRITE_IP: "1"
+      OVERWRITEHOST: ${NEXTCLOUD_OVERWRITE_HOST:-nextcloud.henrique.pw}
+      OVERWRITEPROTOCOL: ${NEXTCLOUD_OVERWRITE_PROTOCOL:-https}
+      OVERWRITECLIURL: ${NEXTCLOUD_OVERWRITE_CLI_URL:-https://nextcloud.henrique.pw}
+    volumes:
+      - ${APPS_DIR}/nextcloud/html:/var/www/html
+    labels:
+      glance.hide: false
+      glance.id: nextcloud
+      glance.name: Nextcloud
+      glance.icon: si:nextcloud
+      glance.url: https://nextcloud.henrique.pw
+      glance.description: Files and collaboration
+
+  cron:
+    container_name: nextcloud-cron
+    image: nextcloud:apache
+    restart: unless-stopped
+    networks:
+      - default
+    labels:
+      glance.hide: true
+      glance.id: nextcloud-cron
+      glance.name: Cron
+      glance.parent: nextcloud
+      glance.description: Background jobs
+    depends_on:
+      - db
+      - redis
+      - nextcloud
+    entrypoint: /cron.sh
+    env_file:
+      - ../.env
+    environment:
+      TZ: ${TZ}
+      MYSQL_HOST: db
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-nextcloud}
+      MYSQL_USER: ${MYSQL_USER:-nextcloud}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      NEXTCLOUD_DATA_DIR: ${NEXTCLOUD_DATA_DIR:-/var/www/html/data}
+      REDIS_HOST: redis
+      REDIS_HOST_PORT: 6379
+    volumes:
+      - ${APPS_DIR}/nextcloud/html:/var/www/html
