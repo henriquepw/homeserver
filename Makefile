@@ -44,6 +44,7 @@ down:
 .PHONY: update
 update: network
 	@for dir in servers/*; do \
+		[ "$$dir" = "servers/adguard" ] && continue; \
 		[ "$$dir" = "servers/nginx" ] && continue; \
 		echo ">>> Updating $$dir"; \
 		$(DC) -f "$${dir}/compose.yml" pull; \
