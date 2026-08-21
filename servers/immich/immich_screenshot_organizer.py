@@ -149,7 +149,7 @@ def fetchAssets():
     assets = []
     # prepare request body
     body = {}
-    body['isOffline'] = 'false'
+    body['isOffline'] = False
     body['type'] = 'IMAGE'
     body['withExif'] = True
     if (library_name is not None or import_path is not None) and library_id is not None:
@@ -160,7 +160,7 @@ def fetchAssets():
     body['size'] = number_of_assets_to_fetch_per_request_search
     # Initial API call, let's fetch our first chunk
     page = 1
-    body['page'] = str(page)
+    body['page'] = page
     r = requests.post(root_url + 'search/metadata', json=body, **requests_kwargs)
     r.raise_for_status()
     responseJson = r.json()
@@ -189,7 +189,7 @@ def fetchAssetsSearchSmart():
     # prepare request body
     body = {}
     body['query'] = 'screenshot'
-    body['isOffline'] = 'false'
+    body['isOffline'] = False
     body['type'] = 'IMAGE'
     body['withExif'] = True
     if (library_name is not None or import_path is not None) and library_id is not None:
@@ -200,7 +200,7 @@ def fetchAssetsSearchSmart():
     body['size'] = number_of_assets_to_fetch_per_request_search
     # Initial API call, let's fetch our first chunk
     page = 1
-    body['page'] = str(page)
+    body['page'] = page
     r = requests.post(root_url + 'search/smart', json=body, **requests_kwargs)
     r.raise_for_status()
     responseJson = r.json()
@@ -212,7 +212,7 @@ def fetchAssetsSearchSmart():
     while len(assetsReceived) == number_of_assets_to_fetch_per_request_search:
         page += 1
         body['page'] = page
-        r = requests.post(root_url + 'search/metadata', json=body, **requests_kwargs)
+        r = requests.post(root_url + 'search/smart', json=body, **requests_kwargs)
         assert r.status_code == 200
         responseJson = r.json()
         assetsReceived = responseJson['assets']['items']
