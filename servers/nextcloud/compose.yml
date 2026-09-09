@@ -49,7 +49,7 @@ services:
       - db
       - redis
     env_file:
-      - ../.env
+      - ../../.env
     environment:
       TZ: ${TZ}
       MYSQL_HOST: db
@@ -94,7 +94,7 @@ services:
       - nextcloud
     entrypoint: /cron.sh
     env_file:
-      - ../.env
+      - ../../.env
     environment:
       TZ: ${TZ}
       MYSQL_HOST: db
