@@ -60,7 +60,6 @@
           repositories:
             - glanceapp/glance
             - immich-app/immich
-            - gotson/komga
             - syncthing/syncthing
 
         - type: docker-containers

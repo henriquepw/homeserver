@@ -93,7 +93,7 @@ certs-info:
 		-noout -subject -ext subjectAltName -dates
 
 # --- FileFlows native node (macOS, VideoToolbox HW encode) ---
-# The FileFlows *server* runs in Docker (servers/watcher). This node runs natively
+# The FileFlows *server* runs in Docker (servers/media). This node runs natively
 # on macOS so it can use VideoToolbox hardware encoding, which Docker/Linux can't
 # reach. It's installed from the official Homebrew tap, which pulls in dotnet@10 and
 # registers a launchd service via `brew services` (runs as your user, RunAtLoad +

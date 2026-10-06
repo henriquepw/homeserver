@@ -1,4 +1,4 @@
-name: "watcher"
+name: "media"
 
 networks:
   dnet:
@@ -78,6 +78,8 @@ services:
       - LOG_HTML=${LOG_HTML:-false}
       - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}
       - TZ=${TZ}
+    # Docker's default /dev/shm is too small for Chrome; challenges fail with "tab crashed".
+    shm_size: 1gb
     sysctls:
       - net.ipv6.conf.all.disable_ipv6=1
 
@@ -321,6 +323,12 @@ services:
         source: ${MEDIA_DIR}/videos
         target: /media/videos
       - type: bind
+        source: ${MEDIA_DIR}/books
+        target: /media/books
+      - type: bind
+        source: ${MEDIA_DIR}/mangas
+        target: /media/mangas
+      - type: bind
         source: ${MEDIA_DIR}/fonts
         target: /usr/local/share/fonts/custom
         read_only: true
@@ -339,3 +347,24 @@ services:
       glance.icon: si:jellyfin
       glance.url: https://tv.henrique.pw
       glance.description: Movies & shows
+
+  suwayomi:
+    image: ghcr.io/suwayomi/suwayomi-server:stable
+    container_name: suwayomi
+    restart: unless-stopped
+    environment:
+      - FLARESOLVERR_ENABLED=true
+      - FLARESOLVERR_URL=http://flaresolverr:8191
+    networks:
+      - default
+      - dnet
+    volumes: # The order matters! Make sure the downloads is first in the volume list or it will not work!
+      - ${MEDIA_DIR}/mangas:/home/suwayomi/.local/share/Tachidesk/downloads
+      - ${MEDIA_DIR}/tachidesk:/home/suwayomi/.local/share/Tachidesk
+    labels:
+      glance.hide: false
+      glance.id: suwayomi
+      glance.name: Suwayomi
+      glance.icon: si:suwayomi
+      glance.url: https://manga.henrique.pw
+      glance.description: Manga Downloader
