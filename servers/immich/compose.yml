@@ -46,6 +46,21 @@ services:
       glance.url: https://photos.henrique.pw
       glance.description: Image & video management
 
+  # Public face of shared links: serves /share without exposing Immich's API.
+  public-proxy:
+    container_name: immich-public-proxy
+    image: alangrainger/immich-public-proxy:latest
+    restart: always
+    networks:
+      - dnet
+    environment:
+      PUBLIC_BASE_URL: https://photos.henrique.pw
+      IMMICH_URL: http://immich-server:2283
+    labels:
+      glance.hide: false
+      glance.parent: immich
+      glance.name: Public Proxy
+
   # Internal network only: no UI, no reason to be reachable outside the stack.
   immich-machine-learning:
     container_name: machine_learning
