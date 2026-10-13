@@ -76,6 +76,22 @@ services:
       glance.url: https://nuvem.henrique.pw
       glance.description: Files and collaboration
 
+  onlyoffice:
+    container_name: onlyoffice
+    image: onlyoffice/documentserver
+    restart: unless-stopped
+    networks:
+      - default
+      - dnet
+    environment:
+      JWT_SECRET: ${ONLYOFFICE_JWT_SECRET}
+    labels:
+      glance.hide: true
+      glance.id: onlyoffice
+      glance.name: OnlyOffice
+      glance.parent: nextcloud
+      glance.description: Document editor
+
   cron:
     container_name: nextcloud-cron
     image: nextcloud:apache
