@@ -1,0 +1,75 @@
+name: guacamole
+
+networks:
+  dnet:
+    external: true
+
+services:
+  # Postgres only runs initdb.d on an empty data dir, so regenerating the schema on every up is harmless.
+  initdb:
+    container_name: guacamole-initdb
+    image: guacamole/guacamole:latest
+    user: root
+    labels:
+      glance.hide: true
+    entrypoint: ["sh", "-c", "/opt/guacamole/bin/initdb.sh --postgresql > /init/initdb.sql"]
+    volumes:
+      - ${APPS_DIR}/guacamole/init:/init
+
+  postgres:
+    container_name: guacamole-postgres
+    image: postgres:16-alpine
+    restart: unless-stopped
+    depends_on:
+      initdb:
+        condition: service_completed_successfully
+    labels:
+      glance.hide: true
+      glance.id: guacamole-postgres
+      glance.name: DB
+      glance.parent: guacamole
+      glance.description: PostgreSQL database
+    environment:
+      POSTGRES_USER: ${GUACAMOLE_DB_USER}
+      POSTGRES_PASSWORD: ${GUACAMOLE_DB_PASSWORD}
+      POSTGRES_DB: ${GUACAMOLE_DB_NAME}
+    volumes:
+      - ${APPS_DIR}/guacamole/init:/docker-entrypoint-initdb.d:ro
+      - ${APPS_DIR}/guacamole/postgres:/var/lib/postgresql/data
+
+  guacd:
+    container_name: guacd
+    image: guacamole/guacd:latest
+    restart: unless-stopped
+    labels:
+      glance.hide: true
+      glance.id: guacd
+      glance.name: guacd
+      glance.parent: guacamole
+      glance.description: Remote desktop proxy
+
+  # Reaches the Mac's Screen Sharing at host.docker.internal:5900, set in the connection UI.
+  guacamole:
+    container_name: guacamole
+    image: guacamole/guacamole:latest
+    restart: unless-stopped
+    networks:
+      - default
+      - dnet
+    depends_on:
+      - guacd
+      - postgres
+    environment:
+      WEBAPP_CONTEXT: ROOT
+      GUACD_HOSTNAME: guacd
+      POSTGRESQL_HOSTNAME: postgres
+      POSTGRESQL_DATABASE: ${GUACAMOLE_DB_NAME:-guacamole}
+      POSTGRESQL_USERNAME: ${GUACAMOLE_DB_USER:-guacamole}
+      POSTGRESQL_PASSWORD: ${GUACAMOLE_DB_PASSWORD}
+    labels:
+      glance.hide: false
+      glance.id: guacamole
+      glance.name: Guacamole
+      glance.icon: di:guacamole
+      glance.url: https://server.henrique.pw
+      glance.description: Mac screen in the browser
